@@ -21,12 +21,12 @@
 //   }
 
 const firebaseConfig = {
-  apiKey: "REPLACE_ME",
-  authDomain: "REPLACE_ME",
-  projectId: "REPLACE_ME",
-  storageBucket: "REPLACE_ME",
-  messagingSenderId: "REPLACE_ME",
-  appId: "REPLACE_ME",
+  apiKey: "AIzaSyB0X6TxZcuL9L6oyPUItjB8ZcSu3ZBfBqU",
+  authDomain: "monadshoterlb.firebaseapp.com",
+  projectId: "monadshoterlb",
+  storageBucket: "monadshoterlb.firebasestorage.app",
+  messagingSenderId: "386682561777",
+  appId: "1:386682561777:web:5ab5e885e7e9ee9feaf550",
 };
 
 const ENABLED = !Object.values(firebaseConfig).some((v) => v === "REPLACE_ME");

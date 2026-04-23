@@ -1,0 +1,100 @@
+Upgrade the game to be fully responsive for both desktop and mobile.
+
+⚠️ IMPORTANT RULES:
+- Do NOT rewrite the game logic
+- Do NOT modify Firebase logic
+- Do NOT rename files
+- Only adjust layout, canvas scaling, and input handling
+
+--------------------------------------------------
+
+🎯 GOAL:
+Make the game playable smoothly on:
+- Desktop (keyboard)
+- Mobile (touch)
+
+--------------------------------------------------
+
+🖥️ TASK 1 — RESPONSIVE CANVAS
+
+Make the canvas automatically scale based on screen size while maintaining portrait ratio.
+
+- Maintain aspect ratio ~2:3 (width:height)
+- Center the game on screen
+- Prevent stretching
+
+Update canvas sizing:
+
+- Max width: 420px (desktop)
+- On mobile: use ~90% of screen width
+
+Example behavior:
+- Desktop → fixed centered canvas
+- Mobile → fills most of screen width
+
+--------------------------------------------------
+
+📱 TASK 2 — TOUCH CONTROLS (MOBILE)
+
+Add touch support WITHOUT removing keyboard controls.
+
+Controls:
+- Touch & drag → move player
+- Tap & hold → continuous shooting (like holding space)
+
+Implementation idea:
+- Track touch position
+- Move player toward touch
+- Use touchstart / touchmove / touchend
+
+--------------------------------------------------
+
+⌨️ TASK 3 — KEEP KEYBOARD CONTROLS
+
+DO NOT remove:
+- Arrow keys / WASD → movement
+- Space → rapid fire
+
+Both input systems must work together.
+
+--------------------------------------------------
+
+🎯 TASK 4 — UI SCALING
+
+Make UI scale properly:
+
+- HUD (score/time/hp) stays readable on small screens
+- Leaderboard moves BELOW canvas on mobile (instead of right side)
+
+Responsive layout:
+- Desktop → side-by-side (game + leaderboard)
+- Mobile → stacked (game on top, leaderboard below)
+
+--------------------------------------------------
+
+🎯 TASK 5 — SAFE AREA (MOBILE)
+
+Ensure:
+- No UI is cut off on small screens
+- Add padding around edges
+
+--------------------------------------------------
+
+🎯 TASK 6 — PERFORMANCE
+
+- Reduce particle count slightly on mobile devices
+- Keep FPS stable
+
+--------------------------------------------------
+
+🎯 RESULT:
+
+Game should:
+- Feel natural on phone (touch)
+- Feel smooth on PC (keyboard)
+- Keep same gameplay experience
+- No visual stretching or broken layout
+
+--------------------------------------------------
+
+ONLY apply these changes. Do not alter gameplay balance or mechanics.

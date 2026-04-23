@@ -99,19 +99,61 @@ const KEYS = { left: false, right: false, up: false, down: false, space: false }
 // INPUT
 // ============================================================
 window.addEventListener("keydown", (e) => {
-  if (e.key === "ArrowLeft") KEYS.left = true;
-  if (e.key === "ArrowRight") KEYS.right = true;
-  if (e.key === "ArrowUp") KEYS.up = true;
-  if (e.key === "ArrowDown") KEYS.down = true;
+  const k = e.key.toLowerCase();
+  if (e.key === "ArrowLeft" || k === "a") KEYS.left = true;
+  if (e.key === "ArrowRight" || k === "d") KEYS.right = true;
+  if (e.key === "ArrowUp" || k === "w") KEYS.up = true;
+  if (e.key === "ArrowDown" || k === "s") KEYS.down = true;
   if (e.code === "Space") { KEYS.space = true; e.preventDefault(); }
 });
 window.addEventListener("keyup", (e) => {
-  if (e.key === "ArrowLeft") KEYS.left = false;
-  if (e.key === "ArrowRight") KEYS.right = false;
-  if (e.key === "ArrowUp") KEYS.up = false;
-  if (e.key === "ArrowDown") KEYS.down = false;
+  const k = e.key.toLowerCase();
+  if (e.key === "ArrowLeft" || k === "a") KEYS.left = false;
+  if (e.key === "ArrowRight" || k === "d") KEYS.right = false;
+  if (e.key === "ArrowUp" || k === "w") KEYS.up = false;
+  if (e.key === "ArrowDown" || k === "s") KEYS.down = false;
   if (e.code === "Space") KEYS.space = false;
 });
+
+// Touch controls — drag to move toward touch, hold to rapid-fire
+const TOUCH = { active: false, x: 0, y: 0 };
+const IS_MOBILE = (() => {
+  return typeof matchMedia !== "undefined" && matchMedia("(hover: none) and (pointer: coarse)").matches;
+})();
+
+function touchToCanvas(touch) {
+  const rect = canvas.getBoundingClientRect();
+  const sx = canvas.width / rect.width;
+  const sy = canvas.height / rect.height;
+  return {
+    x: (touch.clientX - rect.left) * sx,
+    y: (touch.clientY - rect.top) * sy,
+  };
+}
+
+canvas.addEventListener("touchstart", (e) => {
+  e.preventDefault();
+  if (e.touches.length === 0) return;
+  const p = touchToCanvas(e.touches[0]);
+  TOUCH.active = true; TOUCH.x = p.x; TOUCH.y = p.y;
+  KEYS.space = true;
+  audio();
+}, { passive: false });
+
+canvas.addEventListener("touchmove", (e) => {
+  e.preventDefault();
+  if (e.touches.length === 0) return;
+  const p = touchToCanvas(e.touches[0]);
+  TOUCH.x = p.x; TOUCH.y = p.y;
+}, { passive: false });
+
+function endTouch(e) {
+  if (e) e.preventDefault();
+  TOUCH.active = false;
+  KEYS.space = false;
+}
+canvas.addEventListener("touchend", endTouch, { passive: false });
+canvas.addEventListener("touchcancel", endTouch, { passive: false });
 
 // ============================================================
 // ENTITIES
@@ -153,7 +195,8 @@ function dropPowerup(x, y, force) {
 }
 
 function explode(x, y, color) {
-  for (let i = 0; i < 18; i++) {
+  const count = IS_MOBILE ? 10 : 18;
+  for (let i = 0; i < count; i++) {
     const a = Math.random() * Math.PI * 2;
     const s = 60 + Math.random() * 180;
     STATE.particles.push({
@@ -199,6 +242,17 @@ function update(dt) {
   if (KEYS.right) p.x += p.baseSpeed * speedMul * dt;
   if (KEYS.up)    p.y -= p.baseSpeed * speedMul * dt;
   if (KEYS.down)  p.y += p.baseSpeed * speedMul * dt;
+  if (TOUCH.active) {
+    const dx = TOUCH.x - p.x;
+    const dy = TOUCH.y - p.y;
+    const dist = Math.hypot(dx, dy);
+    if (dist > 4) {
+      const maxStep = p.baseSpeed * speedMul * dt;
+      const step = Math.min(dist, maxStep);
+      p.x += (dx / dist) * step;
+      p.y += (dy / dist) * step;
+    }
+  }
   p.x = Math.max(p.w / 2, Math.min(W - p.w / 2, p.x));
   p.y = Math.max(p.h / 2, Math.min(H - p.h / 2, p.y));
 

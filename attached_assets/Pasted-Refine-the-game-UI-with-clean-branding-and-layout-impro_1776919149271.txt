@@ -1,0 +1,106 @@
+Refine the game UI with clean branding and layout improvements.
+
+⚠️ IMPORTANT RULES:
+- Do NOT modify gameplay logic
+- Do NOT modify Firebase logic
+- Do NOT touch canvas/game mechanics
+- Only update UI layout and styling (HTML + CSS)
+
+--------------------------------------------------
+
+🎯 TASK 1 — TOP TITLE
+
+Add a title at the TOP CENTER of the screen:
+
+Text:
+MONAD SHOOTER
+
+Style:
+- Centered horizontally
+- Bold, clean font
+- Neon purple glow
+- Slight letter spacing
+- Responsive size (smaller on mobile)
+
+Position:
+- Fixed top center
+- Should NOT overlap the game canvas
+
+--------------------------------------------------
+
+🎯 TASK 2 — BACKGROUND LOGO
+
+Add a large transparent logo in the BACKGROUND (NOT inside canvas):
+
+- Center of screen
+- Size: 60–80% of screen width
+- Opacity: 0.03 – 0.08
+- Slight rotation (~10deg)
+- Slight blur
+- pointer-events: none
+
+Optional glow:
+- soft purple/blue neon blur behind it
+
+Ensure:
+- It stays BEHIND everything (lowest z-index)
+
+--------------------------------------------------
+
+🎯 TASK 3 — WATERMARK (BOTTOM CENTER)
+
+Add branding at BOTTOM CENTER:
+
+Text:
+Built by Kaivaneth
+
+Below it:
+X (Twitter icon) + link:
+https://x.com/Kaivaneth
+
+Style:
+- Small font
+- Neon purple glow
+- Slight transparency
+- Clean spacing
+
+Behavior:
+- Clickable link opens in new tab
+
+Position:
+- Bottom center of screen
+- Must NOT overlap gameplay UI
+
+--------------------------------------------------
+
+🎯 TASK 4 — RESPONSIVE
+
+- Mobile:
+  - Title slightly smaller
+  - Background logo scaled down
+  - Watermark stays centered & readable
+
+- Desktop:
+  - Balanced spacing (top title, center game, bottom watermark)
+
+--------------------------------------------------
+
+🎯 TASK 5 — LAYOUT CLEANUP
+
+Ensure:
+- Game stays centered
+- No overlapping elements
+- Consistent spacing top → game → bottom
+
+--------------------------------------------------
+
+🎯 RESULT:
+
+- Clean, premium UI
+- Strong identity (title + watermark)
+- Background feels alive but not distracting
+- Fully responsive for mobile + desktop
+
+--------------------------------------------------
+
+Only apply visual/layout improvements. Do not change gameplay.

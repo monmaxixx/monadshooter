@@ -13,10 +13,63 @@
       overflow: hidden;
     }
     html, body { overflow: auto; }
+
+    /* Background logo (decorative) */
+    #bg-logo {
+      position: fixed;
+      top: 50%; left: 50%;
+      width: min(70vw, 70vh);
+      height: auto;
+      transform: translate(-50%, -50%) rotate(-10deg);
+      opacity: 0.05;
+      filter: blur(2px) drop-shadow(0 0 80px #7a4af0);
+      pointer-events: none;
+      z-index: 0;
+      user-select: none;
+    }
+
+    /* Top title */
+    #brand-title {
+      position: fixed; top: max(10px, env(safe-area-inset-top));
+      left: 0; right: 0;
+      text-align: center;
+      font-family: 'Courier New', monospace;
+      font-weight: bold;
+      font-size: clamp(16px, 3.2vw, 26px);
+      letter-spacing: 4px;
+      color: #fff;
+      text-shadow: 0 0 12px #7a4af0, 0 0 24px #4a1ac0;
+      z-index: 50;
+      pointer-events: none;
+    }
+
+    /* Bottom watermark */
+    #watermark {
+      position: fixed; bottom: max(8px, env(safe-area-inset-bottom));
+      left: 0; right: 0;
+      text-align: center;
+      font-size: 11px; letter-spacing: 1px;
+      color: #b18cff;
+      text-shadow: 0 0 8px rgba(122,74,240,.6);
+      opacity: .8;
+      z-index: 50;
+      pointer-events: none;
+    }
+    #watermark a {
+      color: #b18cff; text-decoration: none;
+      pointer-events: auto;
+      display: inline-flex; align-items: center; gap: 4px;
+      margin-left: 6px;
+      transition: color .15s, text-shadow .15s;
+    }
+    #watermark a:hover { color: #fff; text-shadow: 0 0 10px #7a4af0; }
+    #watermark svg { width: 12px; height: 12px; vertical-align: middle; }
+
     #app {
+      position: relative; z-index: 1;
       display: grid; grid-template-columns: 1fr 280px;
       gap: 16px;
-      padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+      padding: clamp(40px, 6vh, 60px) max(12px, env(safe-area-inset-right)) clamp(36px, 5vh, 50px) max(12px, env(safe-area-inset-left));
       min-height: 100vh; min-height: 100dvh;
     }
     #left { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; min-width: 0; }
@@ -102,17 +155,21 @@
     .panel button:active { transform: translateY(2px); box-shadow: 0 0 0 #2a0a80; }
     .panel .hint { color: #8a6acf; font-size: 11px; margin-top: 12px; }
     @media (max-width: 800px) {
-      #app { grid-template-columns: 1fr; gap: 10px; }
+      #app { grid-template-columns: 1fr; gap: 10px; padding-top: 44px; padding-bottom: 40px; }
       #right { max-height: 240px; }
       #hud { gap: 10px; padding: 6px 10px; font-size: 12px; }
       #hud .v { font-size: 14px; }
       #hpbar { width: 80px; }
       .panel { min-width: 0; width: min(92vw, 360px); padding: 24px 20px; }
       .panel h1 { font-size: 28px; }
+      #brand-title { letter-spacing: 3px; }
+      #bg-logo { width: 90vw; opacity: .04; }
     }
   </style>
 </head>
 <body>
+  <img id="bg-logo" src="./assets/chog.png" alt="" />
+  <div id="brand-title">MONAD&nbsp;SHOOTER</div>
   <div id="app">
     <div id="left">
       <div id="hud">
@@ -145,6 +202,13 @@
     </div>
   </div>
 
+  <div id="watermark">
+    Built by Kaivaneth
+    <a href="https://x.com/Kaivaneth" target="_blank" rel="noopener noreferrer" aria-label="X / Twitter">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2H21l-6.52 7.45L22 22h-6.79l-4.6-6.01L5.4 22H2.64l6.97-7.96L2 2h6.95l4.16 5.5L18.24 2zm-1.19 18h1.5L7.05 4H5.5l11.55 16z"/></svg>
+      @Kaivaneth
+    </a>
+  </div>
   <script type="module" src="./game.js"></script>
 </body>
 </html>

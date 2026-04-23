@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+  <title>Monad Shooter</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 100%; height: 100%;
+      background: radial-gradient(ellipse at center, #1a0535 0%, #06010f 70%);
+      color: #e6e0ff; font-family: 'Courier New', monospace;
+      overflow: hidden;
+    }
+    html, body { overflow: auto; }
+
+    /* Side logo (decorative, desktop-only) */
+    #side-logo {
+      position: fixed;
+      left: clamp(10px, 3vw, 60px);
+      top: 50%;
+      width: clamp(220px, 26vw, 380px);
+      height: auto;
+      filter: blur(1.5px) drop-shadow(0 0 60px #7a4af0) drop-shadow(0 0 120px #4ad0f0);
+      pointer-events: none;
+      z-index: 0;
+      user-select: none;
+      animation: float-side 14s ease-in-out infinite, pulse-soft 9s ease-in-out infinite;
+      will-change: transform, opacity;
+    }
+    @media (max-width: 1100px) { #side-logo { display: none; } }
+
+    /* Background logo (decorative) */
+    #bg-logo {
+      position: fixed;
+      top: 50%; left: 50%;
+      width: min(70vw, 70vh);
+      height: auto;
+      filter: blur(2px) drop-shadow(0 0 80px #7a4af0);
+      pointer-events: none;
+      z-index: 0;
+      user-select: none;
+      animation: float-bg 18s ease-in-out infinite, pulse-soft 11s ease-in-out infinite;
+      will-change: transform, opacity;
+    }
+
+    @keyframes float-side {
+      0%,100% { transform: translateY(-50%) rotate(-10deg) translate(0, 0); }
+      50%     { transform: translateY(-46%) rotate(-9deg)  translate(6px, 0); }
+    }
+    @keyframes float-bg {
+      0%,100% { transform: translate(-50%, -50%) rotate(-10deg) translate(0, 0); }
+      50%     { transform: translate(-50%, -50%) rotate(-11deg) translate(-8px, 6px); }
+    }
+    @keyframes pulse-soft {
+      0%,100% { opacity: 0.05; }
+      50%     { opacity: 0.08; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      #side-logo, #bg-logo { animation: none; }
+    }
+
+    /* Top title (above the game) */
+    #brand-title {
+      text-align: center;
+      font-family: 'Courier New', monospace;
+      font-weight: bold;
+      font-size: clamp(16px, 2.4vw, 24px);
+      letter-spacing: 4px;
+      color: #fff;
+      text-shadow: 0 0 12px #7a4af0, 0 0 24px #4a1ac0;
+      width: min(92vw, 420px);
+      margin: 0 auto;
+    }
+
+    /* Bottom watermark */
+    #watermark {
+      position: fixed; bottom: max(8px, env(safe-area-inset-bottom));
+      left: 0; right: 0;
+      text-align: center;
+      font-size: 11px; letter-spacing: 1px;
+      color: #b18cff;
+      text-shadow: 0 0 8px rgba(122,74,240,.6);
+      opacity: .8;
+      z-index: 50;
+      pointer-events: none;
+    }
+    #watermark a {
+      color: #b18cff; text-decoration: none;
+      pointer-events: auto;
+      display: inline-flex; align-items: center; gap: 4px;
+      margin-left: 6px;
+      transition: color .15s, text-shadow .15s;
+    }
+    #watermark a:hover { color: #fff; text-shadow: 0 0 10px #7a4af0; }
+    #watermark svg { width: 12px; height: 12px; vertical-align: middle; }
+
+    #app {
+      position: relative; z-index: 1;
+      display: grid; grid-template-columns: 1fr 280px;
+      gap: 16px;
+      padding: 16px max(12px, env(safe-area-inset-right)) clamp(36px, 5vh, 50px) max(12px, env(safe-area-inset-left));
+      min-height: 100vh; min-height: 100dvh;
+    }
+    #left { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; min-width: 0; }
+    .game-container {
+      width: min(92vw, 420px);
+      max-height: calc(100dvh - 140px);
+      aspect-ratio: 2 / 3;
+      margin: 0 auto;
+      touch-action: none;
+    }
+    .game-container canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    #hud {
+      display: flex; gap: 16px; align-items: center; flex-wrap: wrap;
+      justify-content: center;
+      background: rgba(20,5,50,.6); border: 1px solid #5a2bb5;
+      border-radius: 10px; padding: 8px 14px; font-size: 13px;
+      box-shadow: 0 0 20px rgba(120,60,220,.3);
+      max-width: 100%;
+    }
+    #hud .k { color: #b18cff; font-size: 11px; letter-spacing: 1px; }
+    #hud .v { color: #fff; font-weight: bold; font-size: 16px; }
+    #hpbar { width: 120px; height: 10px; background: #2a0a4a; border: 1px solid #6a3acf; border-radius: 4px; overflow: hidden; }
+    #hpfill { height: 100%; background: linear-gradient(90deg, #ff3b6b, #ff9b2b); transition: width .15s; }
+    #powers { display: flex; gap: 6px; }
+    .pwr { padding: 2px 6px; border-radius: 4px; font-size: 11px; background: #3a1a7a; border: 1px solid #7a4af0; }
+    .pwr.shield { background: #1a4a7a; border-color: #4ad0f0; }
+    .pwr.triple { background: #7a1a4a; border-color: #f04ad0; }
+    .pwr.speed  { background: #4a7a1a; border-color: #d0f04a; }
+    canvas {
+      display: block; background: #06010f;
+      border: 1px solid #5a2bb5; border-radius: 12px;
+      box-shadow: 0 0 40px rgba(120,60,220,.4), inset 0 0 60px rgba(50,10,90,.4);
+      max-width: 100%; max-height: calc(100vh - 100px);
+    }
+    #right {
+      background: rgba(20,5,50,.6); border: 1px solid #5a2bb5;
+      border-radius: 10px; padding: 14px; overflow-y: auto;
+      box-shadow: 0 0 20px rgba(120,60,220,.3);
+    }
+    #right h2 { font-size: 14px; color: #b18cff; letter-spacing: 2px; margin-bottom: 10px; text-align: center; }
+    #lb-list { font-size: 12px; }
+    .lb-row { display: grid; grid-template-columns: 22px 1fr auto; gap: 6px; padding: 6px 4px; border-bottom: 1px solid #2a1055; align-items: center; }
+    .lb-row .rk { color: #b18cff; font-weight: bold; }
+    .lb-row .nm { color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .lb-row .sc { color: #f0c84a; font-weight: bold; }
+    .lb-row.me { background: rgba(120,60,220,.2); border-radius: 4px; }
+    #lb-status { font-size: 11px; color: #8a6acf; text-align: center; padding: 8px; }
+    #overlay {
+      position: fixed; inset: 0; display: none; align-items: center; justify-content: center;
+      background: rgba(6,1,15,.85); backdrop-filter: blur(4px); z-index: 100;
+    }
+    #overlay.show { display: flex; }
+    .panel {
+      background: linear-gradient(180deg, #1a0535, #0a021a);
+      border: 1px solid #7a4af0; border-radius: 14px;
+      padding: 32px; min-width: 360px; text-align: center;
+      box-shadow: 0 0 60px rgba(120,60,220,.5);
+    }
+    .panel h1 { font-size: 36px; color: #fff; margin-bottom: 8px; text-shadow: 0 0 20px #7a4af0; }
+    .panel .sub { color: #b18cff; margin-bottom: 20px; font-size: 13px; letter-spacing: 1px; }
+    .panel .stats { display: flex; gap: 20px; justify-content: center; margin: 16px 0; }
+    .panel .stat { background: rgba(120,60,220,.15); padding: 10px 16px; border-radius: 8px; border: 1px solid #4a1a8a; }
+    .panel .stat .l { font-size: 10px; color: #8a6acf; letter-spacing: 1px; }
+    .panel .stat .n { font-size: 22px; color: #fff; font-weight: bold; }
+    .panel input {
+      background: #06010f; color: #fff; border: 1px solid #7a4af0;
+      padding: 10px 12px; border-radius: 6px; font-size: 14px;
+      width: 100%; margin: 10px 0; font-family: inherit;
+    }
+    .panel button {
+      background: linear-gradient(180deg, #7a4af0, #4a1ac0);
+      color: #fff; border: 0; padding: 12px 24px; border-radius: 8px;
+      font-size: 14px; font-weight: bold; letter-spacing: 1px;
+      cursor: pointer; margin: 4px; font-family: inherit;
+      box-shadow: 0 4px 0 #2a0a80, 0 0 20px rgba(120,60,220,.5);
+      transition: transform .1s;
+    }
+    .panel button:hover { transform: translateY(-2px); }
+    .panel button:active { transform: translateY(2px); box-shadow: 0 0 0 #2a0a80; }
+    .panel .hint { color: #8a6acf; font-size: 11px; margin-top: 12px; }
+    @media (max-width: 800px) {
+      #app { grid-template-columns: 1fr; gap: 10px; padding-top: 12px; padding-bottom: 40px; }
+      #right { max-height: 240px; }
+      #hud { gap: 10px; padding: 6px 10px; font-size: 12px; }
+      #hud .v { font-size: 14px; }
+      #hpbar { width: 80px; }
+      .panel { min-width: 0; width: min(92vw, 360px); padding: 24px 20px; }
+      .panel h1 { font-size: 28px; }
+      #brand-title { letter-spacing: 3px; }
+      #bg-logo { width: 90vw; opacity: .04; }
+    }
+  </style>
+</head>
+<body>
+  <img id="bg-logo" src="./assets/chog.png" alt="" />
+  <img id="side-logo" src="./assets/monad-logo.png" alt="" />
+  <div id="app">
+    <div id="left">
+      <div id="brand-title">MONAD&nbsp;SHOOTER</div>
+      <div id="hud">
+        <div><div class="k">SCORE</div><div class="v" id="score">0</div></div>
+        <div><div class="k">TIME</div><div class="v" id="time">0s</div></div>
+        <div><div class="k">HP</div><div id="hpbar"><div id="hpfill" style="width:100%"></div></div></div>
+        <div><div class="k">POWERS</div><div id="powers"></div></div>
+      </div>
+      <div class="game-container">
+        <canvas id="game" width="480" height="720"></canvas>
+      </div>
+    </div>
+    <div id="right">
+      <h2>LEADERBOARD</h2>
+      <div id="lb-list"></div>
+      <div id="lb-status">Loading...</div>
+    </div>
+  </div>
+
+  <div id="overlay" class="show">
+    <div class="panel" id="panel">
+      <h1>MONAD SHOOTER</h1>
+      <div class="sub">SURVIVE THE SWARM</div>
+      <div style="text-align:left; font-size:12px; color:#b18cff; margin: 16px 0; line-height: 1.8;">
+        ← → ↑ ↓ Arrow keys to move<br>
+        Auto-fire enabled — hold <b style="color:#00aaff">SPACE</b> for rapid fire<br>
+        Collect power-ups, defeat the boss
+      </div>
+      <button id="startBtn">START</button>
+    </div>
+  </div>
+
+  <div id="watermark">
+    Built by Kaivaneth
+    <a href="https://x.com/Kaivaneth" target="_blank" rel="noopener noreferrer" aria-label="X / Twitter">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2H21l-6.52 7.45L22 22h-6.79l-4.6-6.01L5.4 22H2.64l6.97-7.96L2 2h6.95l4.16 5.5L18.24 2zm-1.19 18h1.5L7.05 4H5.5l11.55 16z"/></svg>
+      @Kaivaneth
+    </a>
+  </div>
+  <script type="module" src="./game.js"></script>
+</body>
+</html>

@@ -1,0 +1,213 @@
+Build a complete browser-based 2D arcade shooter game called **"Monad Shooter"** using **vanilla JavaScript + HTML5 Canvas (NO React, NO Vite, NO build tools)** so it can run directly on **GitHub Pages**.
+
+⚠️ IMPORTANT:
+
+* The game MUST work as static files (index.html + game.js + assets/)
+* No framework, no bundler, no TypeScript
+* Must be deployable directly to GitHub Pages without build
+
+---
+
+🎮 GAMEPLAY
+
+Player:
+
+* Controlled with Arrow keys (left/right)
+* Auto-shoot every 200ms
+* Character name: **Chog (player ship)**
+
+Enemies (with increasing difficulty):
+
+1. Shramp (easy)
+
+   * Straight down movement
+   * HP: 1
+   * Score: 10
+
+2. Bob (medium)
+
+   * Zig-zag movement
+   * HP: 2
+   * Score: 20
+
+3. Moncock (hard)
+
+   * Dash toward player
+   * HP: 3
+   * Score: 40
+
+4. Emonad (BOSS)
+
+   * Spawns every 30 seconds
+   * Chases player slowly
+   * Shoots bullets
+   * HP: 20
+   * Score: 100
+
+---
+
+⚡ POWER UPS (balanced, not overpowered)
+
+Drop system:
+
+* 15% drop chance from enemies
+* 100% drop from boss
+
+Types:
+
+1. Shield
+
+   * Absorbs 1 hit
+   * Visual ring around player
+
+2. Triple Shot
+
+   * 3 bullets spread
+   * Duration: 5 seconds
+
+3. Speed Boost
+
+   * +50% movement speed
+   * Duration: 5 seconds
+
+No stacking → picking again refreshes duration
+
+---
+
+🎯 GAME SYSTEM
+
+* Score system
+* Survival timer
+* Health bar
+* Game Over screen
+* Restart button
+* Difficulty scaling over time:
+
+  * 0s: Shramp
+  * 10s: +Bob
+  * 20s: +Moncock
+  * 30s: Boss appears
+
+---
+
+💥 VISUAL EFFECTS
+
+* Hit flash on enemy
+* Particle explosion on death
+* Screen shake on:
+
+  * player hit
+  * boss spawn
+  * boss death
+
+---
+
+🔊 SOUND
+
+Use WebAudio (no files needed):
+
+* shoot
+* hit
+* enemy death
+* boss spawn
+
+---
+
+🧠 ANTI-CHEAT (IMPORTANT)
+
+Before saving score:
+
+* Validate score vs survival time
+* Reject unrealistic values
+
+---
+
+🌍 FIREBASE LEADERBOARD
+
+Use Firebase Firestore:
+
+Collection: `scores`
+
+Each document:
+
+* name (string)
+* score (number)
+* time (number)
+* ts (timestamp)
+
+Functions:
+
+* submitScore(name, score, time)
+* getLeaderboard()
+
+Show top 10 leaderboard in UI
+
+---
+
+🔐 FIRESTORE RULES
+
+Only allow:
+
+* valid name (≤16 chars)
+* score ≥ 0 and ≤ 1,000,000
+* time ≥ 0
+* no update/delete
+
+---
+
+📁 PROJECT STRUCTURE (IMPORTANT)
+
+Must generate:
+
+index.html
+game.js
+firebase.js
+/assets/
+chog.png
+bob.png
+shramp.png
+moncock.png
+emonad.png
+
+---
+
+🌐 GITHUB DEPLOY (CRITICAL)
+
+The final output MUST:
+
+* work when opened as static file
+* work on GitHub Pages:
+  https://username.github.io/repo-name/
+
+Use ONLY relative paths:
+✔ ./assets/chog.png
+❌ /assets/chog.png
+
+---
+
+🎨 UI
+
+* Centered canvas
+* Dark purple space theme
+* Leaderboard panel on right
+* HUD:
+
+  * Score
+  * Time
+  * HP
+  * Active power-ups
+
+---
+
+🧪 FINAL REQUIREMENT
+
+The game must:
+✔ run without build
+✔ run locally (double click index.html)
+✔ run on GitHub Pages
+✔ use Firebase leaderboard
+✔ include all features above
+
+---
+
+Output ALL required files with full code.

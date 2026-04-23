@@ -28,19 +28,17 @@
       user-select: none;
     }
 
-    /* Top title */
+    /* Top title (above the game) */
     #brand-title {
-      position: fixed; top: max(10px, env(safe-area-inset-top));
-      left: 0; right: 0;
       text-align: center;
       font-family: 'Courier New', monospace;
       font-weight: bold;
-      font-size: clamp(16px, 3.2vw, 26px);
+      font-size: clamp(16px, 2.4vw, 24px);
       letter-spacing: 4px;
       color: #fff;
       text-shadow: 0 0 12px #7a4af0, 0 0 24px #4a1ac0;
-      z-index: 50;
-      pointer-events: none;
+      width: min(92vw, 420px);
+      margin: 0 auto;
     }
 
     /* Bottom watermark */
@@ -69,7 +67,7 @@
       position: relative; z-index: 1;
       display: grid; grid-template-columns: 1fr 280px;
       gap: 16px;
-      padding: clamp(40px, 6vh, 60px) max(12px, env(safe-area-inset-right)) clamp(36px, 5vh, 50px) max(12px, env(safe-area-inset-left));
+      padding: 16px max(12px, env(safe-area-inset-right)) clamp(36px, 5vh, 50px) max(12px, env(safe-area-inset-left));
       min-height: 100vh; min-height: 100dvh;
     }
     #left { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; min-width: 0; }
@@ -155,7 +153,7 @@
     .panel button:active { transform: translateY(2px); box-shadow: 0 0 0 #2a0a80; }
     .panel .hint { color: #8a6acf; font-size: 11px; margin-top: 12px; }
     @media (max-width: 800px) {
-      #app { grid-template-columns: 1fr; gap: 10px; padding-top: 44px; padding-bottom: 40px; }
+      #app { grid-template-columns: 1fr; gap: 10px; padding-top: 12px; padding-bottom: 40px; }
       #right { max-height: 240px; }
       #hud { gap: 10px; padding: 6px 10px; font-size: 12px; }
       #hud .v { font-size: 14px; }
@@ -169,9 +167,9 @@
 </head>
 <body>
   <img id="bg-logo" src="./assets/chog.png" alt="" />
-  <div id="brand-title">MONAD&nbsp;SHOOTER</div>
   <div id="app">
     <div id="left">
+      <div id="brand-title">MONAD&nbsp;SHOOTER</div>
       <div id="hud">
         <div><div class="k">SCORE</div><div class="v" id="score">0</div></div>
         <div><div class="k">TIME</div><div class="v" id="time">0s</div></div>

@@ -93,7 +93,7 @@ const STATE = {
   stars: [],
 };
 
-const KEYS = { left: false, right: false };
+const KEYS = { left: false, right: false, up: false, down: false, space: false };
 
 // ============================================================
 // INPUT
@@ -101,10 +101,16 @@ const KEYS = { left: false, right: false };
 window.addEventListener("keydown", (e) => {
   if (e.key === "ArrowLeft") KEYS.left = true;
   if (e.key === "ArrowRight") KEYS.right = true;
+  if (e.key === "ArrowUp") KEYS.up = true;
+  if (e.key === "ArrowDown") KEYS.down = true;
+  if (e.code === "Space") { KEYS.space = true; e.preventDefault(); }
 });
 window.addEventListener("keyup", (e) => {
   if (e.key === "ArrowLeft") KEYS.left = false;
   if (e.key === "ArrowRight") KEYS.right = false;
+  if (e.key === "ArrowUp") KEYS.up = false;
+  if (e.key === "ArrowDown") KEYS.down = false;
+  if (e.code === "Space") KEYS.space = false;
 });
 
 // ============================================================
@@ -116,14 +122,14 @@ function makePlayer() {
 
 function spawnEnemy(type) {
   const x = 30 + Math.random() * (W - 60);
-  const base = { x, y: -40, w: 40, h: 40, type, hp: 1, maxHp: 1, vx: 0, vy: 80, score: 10 };
-  if (type === "shramp") { base.hp = 1; base.maxHp = 1; base.vy = 90 + Math.random() * 30; base.score = 10; }
+  const base = { x, y: -40, w: 28, h: 28, type, hp: 1, maxHp: 1, vx: 0, vy: 80, score: 10 };
+  if (type === "shramp") { base.hp = 1; base.maxHp = 1; base.vy = 90 + Math.random() * 30; base.score = 10; base.w = 28; base.h = 28; }
   if (type === "bob") {
     base.hp = 2; base.maxHp = 2; base.vy = 80; base.score = 20;
-    base.zigT = Math.random() * Math.PI * 2; base.w = 44; base.h = 44;
+    base.zigT = Math.random() * Math.PI * 2; base.w = 36; base.h = 36;
   }
   if (type === "moncock") {
-    base.hp = 3; base.maxHp = 3; base.vy = 70; base.score = 40; base.w = 46; base.h = 46;
+    base.hp = 3; base.maxHp = 3; base.vy = 70; base.score = 40; base.w = 44; base.h = 44;
     base.dashCooldown = 1 + Math.random() * 1.5;
   }
   STATE.enemies.push(base);
@@ -131,7 +137,7 @@ function spawnEnemy(type) {
 
 function spawnBoss() {
   STATE.enemies.push({
-    x: W / 2, y: -80, w: 110, h: 110, type: "emonad",
+    x: W / 2, y: -80, w: 80, h: 80, type: "emonad",
     hp: 20, maxHp: 20, vx: 0, vy: 30, score: 100,
     isBoss: true, fireCooldown: 1.5,
   });
@@ -191,10 +197,14 @@ function update(dt) {
   const speedMul = STATE.powers.speed > STATE.elapsed ? 1.5 : 1;
   if (KEYS.left)  p.x -= p.baseSpeed * speedMul * dt;
   if (KEYS.right) p.x += p.baseSpeed * speedMul * dt;
+  if (KEYS.up)    p.y -= p.baseSpeed * speedMul * dt;
+  if (KEYS.down)  p.y += p.baseSpeed * speedMul * dt;
   p.x = Math.max(p.w / 2, Math.min(W - p.w / 2, p.x));
+  p.y = Math.max(p.h / 2, Math.min(H - p.h / 2, p.y));
 
-  // Auto shoot every 200ms
-  if (performance.now() - STATE.lastShot > 200) {
+  // Auto shoot — 200ms normal, 90ms while holding SPACE
+  const fireInterval = KEYS.space ? 90 : 200;
+  if (performance.now() - STATE.lastShot > fireInterval) {
     shoot();
     STATE.lastShot = performance.now();
   }
@@ -407,8 +417,8 @@ function render() {
 
   // bullets
   for (const b of STATE.bullets) {
-    ctx.fillStyle = "#f0c84a";
-    ctx.shadowColor = "#f0c84a"; ctx.shadowBlur = 8;
+    ctx.fillStyle = "#00aaff";
+    ctx.shadowColor = "#00aaff"; ctx.shadowBlur = 8;
     ctx.fillRect(b.x - b.w / 2, b.y - b.h / 2, b.w, b.h);
     ctx.shadowBlur = 0;
   }
